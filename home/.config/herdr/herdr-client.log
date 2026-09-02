@@ -1,0 +1,6 @@
+2026-09-01T05:35:57.605672Z  INFO herdr::logging: herdr starting event="app.startup" subsystem="client" outcome="started" pid=2447
+2026-09-01T05:35:57.605736Z  INFO herdr::client: connecting to server path=/home/gilrallo/.config/herdr/herdr-client.sock
+2026-09-01T05:35:57.683972Z  INFO herdr::client: handshake succeeded version=20 encoding=SemanticFrame
+2026-09-01T05:40:35.061154Z  WARN herdr::raw_input: flushing lone escape after input timeout; if this follows an alt chord or focus switch it may reach the pane as plain esc bytes=[27]
+2026-09-01T05:40:35.102719Z  WARN herdr::raw_input: flushing lone escape after input timeout; if this follows an alt chord or focus switch it may reach the pane as plain esc bytes=[27]
+2026-09-01T05:45:35.463908Z  INFO herdr::logging: herdr exiting event="app.shutdown" subsystem="client" outcome="completed" pid=2447

@@ -1,0 +1,25 @@
+2026-09-01T05:35:56.855009Z  INFO herdr::api::server: api server listening path=/home/gilrallo/.config/herdr/herdr.sock
+2026-09-01T05:35:56.856110Z  INFO herdr::app: using pane scrollback configuration pane_scrollback_limit_bytes=10000000
+2026-09-01T05:35:57.554688Z  INFO herdr::logging: checking for updates event="update.check.start" subsystem="update" outcome="started"
+2026-09-01T05:35:57.556909Z  INFO herdr::logging: spawning pane terminal event="pane.spawn.start" subsystem="pane" outcome="started" pane_id=1 rows=40 cols=120 scrollback_limit_bytes=10000000
+2026-09-01T05:35:57.558153Z  INFO herdr::logging: pane child spawned event="pane.spawned" subsystem="pane" outcome="ok" pane_id=1 pid=2464
+2026-09-01T05:35:57.558566Z  INFO herdr::logging: workspace created event="workspace.create" subsystem="workspace" outcome="ok" workspace_id="w1" pane_id=1
+2026-09-01T05:35:57.558576Z  INFO herdr::logging: workspace focused event="workspace.focus" subsystem="workspace" outcome="ok" workspace_id="w1"
+2026-09-01T05:35:57.558586Z  INFO herdr::logging: tab focused event="tab.focus" subsystem="tab" outcome="ok" workspace_id="w1" tab_id="w1:t1"
+2026-09-01T05:35:57.558593Z  INFO herdr::server::headless: created startup workspace cwd=/home/gilrallo/github/dotfiles
+2026-09-01T05:35:57.558664Z  INFO herdr::server::headless: client protocol socket listening path=/home/gilrallo/.config/herdr/herdr-client.sock
+2026-09-01T05:35:57.558710Z  INFO herdr::server::headless: herdr server started api_socket=/home/gilrallo/.config/herdr/herdr.sock client_socket=/home/gilrallo/.config/herdr/herdr-client.sock
+2026-09-01T05:35:57.558942Z  INFO herdr::logging: herdr starting event="app.startup" subsystem="server" outcome="started" pid=2448
+2026-09-01T05:35:57.684898Z  INFO herdr::server::headless: client connected client_id=2 cols=108 rows=24 cell_width_px=0 cell_height_px=0 render_encoding=SemanticFrame
+2026-09-01T05:36:00.621785Z  INFO herdr::pane: agent changed pane=1 previous_agent=None agent=Some(Claude) process=claude pgid=Some(2626)
+2026-09-01T05:36:02.561306Z  INFO herdr::logging: session saved event="persist.save" subsystem="persist" outcome="ok" path=/home/gilrallo/.config/herdr/session.json workspaces=1
+2026-09-01T05:38:43.924128Z  INFO herdr::app::actions: copied selection to clipboard
+2026-09-01T05:38:57.449197Z  INFO herdr::app::actions: copied selection to clipboard
+2026-09-01T05:40:35.103081Z  WARN herdr::raw_input: flushing lone escape after input timeout; if this follows an alt chord or focus switch it may reach the pane as plain esc bytes=[27]
+2026-09-01T05:40:42.590126Z  INFO herdr::pane: agent changed pane=1 previous_agent=Some(Claude) agent=None pgid=Some(2464)
+2026-09-01T05:40:45.099990Z  INFO herdr::pane: agent changed pane=1 previous_agent=None agent=Some(Claude) process=claude pgid=Some(3020)
+2026-09-01T05:45:27.920222Z  INFO herdr::pane: agent changed pane=1 previous_agent=Some(Claude) agent=None pgid=Some(2464)
+2026-09-01T05:45:35.462482Z  INFO herdr::server::headless: client detach requested via keybind client_id=2
+2026-09-01T05:45:35.504770Z  INFO herdr::server::headless: client disconnected client_id=2
+2026-09-01T06:05:57.557277Z  INFO herdr::logging: checking for updates event="update.check.start" subsystem="update" outcome="started"
+2026-09-01T06:19:31.199256Z  INFO herdr::server::headless: server shutdown initiated
