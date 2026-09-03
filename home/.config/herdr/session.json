@@ -2,13 +2,13 @@
   "version": 3,
   "workspaces": [
     {
-      "id": "w1",
+      "id": "w4",
       "custom_name": null,
-      "identity_cwd": "/home/gilrallo/github/dotfiles",
+      "identity_cwd": "/home/gilrallo/github",
       "public_pane_numbers": {
-        "1": 1
+        "9": 1
       },
-      "next_public_pane_number": 2,
+      "next_public_pane_number": 8,
       "public_tab_numbers": [
         1
       ],
@@ -17,16 +17,16 @@
         {
           "custom_name": null,
           "layout": {
-            "Pane": 1
+            "Pane": 9
           },
           "panes": {
-            "1": {
-              "cwd": "/home/gilrallo/github/dotfiles"
+            "9": {
+              "cwd": "/home/gilrallo/github"
             }
           },
           "zoomed": false,
-          "focused": 1,
-          "root_pane": 1
+          "focused": 9,
+          "root_pane": 9
         }
       ],
       "active_tab": 0

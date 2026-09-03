@@ -25,6 +25,12 @@ in
     syntaxHighlighting.enable = true;  # commands turn green when valid
     initContent = ''
       bindkey '^f' autosuggest-accept
+      
+      # Start ssh-agent once, reuse across shells in the same WSL session
+      if [ -z "$SSH_AUTH_SOCK" ]; then
+        eval "$(ssh-agent -s)" > /dev/null
+        ssh-add ~/.ssh/ed25519-personal 2>/dev/null
+      fi
     '';
     # shellAliases = {
     #  ".." = "cd ..";
