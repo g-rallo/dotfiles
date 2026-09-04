@@ -295,3 +295,19 @@
 2026-09-02T21:43:53.833605Z  INFO herdr::server::headless: client disconnected client_id=2
 2026-09-02T21:44:07.755175Z  INFO herdr::server::headless: server shutdown initiated
 2026-09-02T21:44:07.761141Z  INFO herdr::logging: pane child exited event="pane.exit" subsystem="pane" outcome="completed" pane_id=9 status="ExitStatus { code: 1, signal: None }"
+2026-09-04T05:32:06.182081Z  INFO herdr::api::server: api server listening path=/home/gilrallo/.config/herdr/herdr.sock
+2026-09-04T05:32:06.185694Z  INFO herdr::logging: spawning pane terminal event="pane.spawn.start" subsystem="pane" outcome="started" pane_id=1 rows=24 cols=80 scrollback_limit_bytes=10000000
+2026-09-04T05:32:06.187177Z  INFO herdr::logging: pane child spawned event="pane.spawned" subsystem="pane" outcome="ok" pane_id=1 pid=540
+2026-09-04T05:32:06.187957Z  INFO herdr::logging: session restore evaluated event="persist.restore" subsystem="persist" outcome="ok" workspaces=1
+2026-09-04T05:32:06.187992Z  INFO herdr::app: using pane scrollback configuration pane_scrollback_limit_bytes=10000000
+2026-09-04T05:32:06.967874Z  INFO herdr::logging: checking for updates event="update.check.start" subsystem="update" outcome="started"
+2026-09-04T05:32:06.973605Z  INFO herdr::server::headless: restored session already has workspaces; ignoring startup cwd cwd=/home/gilrallo
+2026-09-04T05:32:06.973793Z  INFO herdr::server::headless: client protocol socket listening path=/home/gilrallo/.config/herdr/herdr-client.sock
+2026-09-04T05:32:06.973975Z  INFO herdr::server::headless: herdr server started api_socket=/home/gilrallo/.config/herdr/herdr.sock client_socket=/home/gilrallo/.config/herdr/herdr-client.sock
+2026-09-04T05:32:06.974388Z  INFO herdr::logging: herdr starting event="app.startup" subsystem="server" outcome="started" pid=530
+2026-09-04T05:32:07.228223Z  INFO herdr::server::headless: client connected client_id=2 cols=80 rows=24 cell_width_px=0 cell_height_px=0 render_encoding=SemanticFrame
+2026-09-04T05:32:20.293852Z  INFO herdr::pane: agent changed pane=1 previous_agent=None agent=Some(Kilo) process=kilo pgid=Some(784)
+2026-09-04T05:32:28.892658Z  INFO herdr::server::headless: client resize client_id=2 cols=172 rows=37 cell_width_px=0 cell_height_px=0
+2026-09-04T05:34:14.835237Z  INFO herdr::pane: agent changed pane=1 previous_agent=Some(Kilo) agent=None pgid=Some(540)
+2026-09-04T05:41:19.116427Z  WARN herdr::raw_input: flushing lone escape after input timeout; if this follows an alt chord or focus switch it may reach the pane as plain esc bytes=[27]
+2026-09-04T05:42:08.009454Z  WARN herdr::raw_input: flushing lone escape after input timeout; if this follows an alt chord or focus switch it may reach the pane as plain esc bytes=[27]
