@@ -151,6 +151,31 @@ Verify: `which kilo`, then `kilo` → `/connect` inside it to add provider API k
 ### 18. Launch WezTerm
 It should open directly into the WSL shell, with home-manager's packages and aliases (`cc`, `co`) already on `PATH`.
 
+### 19. Global AGENTS.md, shared across Claude Code, Codex, OpenCode, and Kilo
+Kun's `home/AGENTS.md` holds general agent-behavior preferences (commit message conventions, how to approach bug fixes, etc.) — the same idea as `CLAUDE.md`, but a cross-tool standard rather than Anthropic-specific. His note: *"Agent configs (Claude, Codex, opencode all share one AGENTS.md)."*
+
+**How this reaches every project, without git being involved at all:** each agent tool has a hardcoded path it checks in your home directory on every startup, regardless of which project you're currently working in — that's the tool's own lookup logic, unrelated to any repo:
+- Claude Code → `~/.claude/CLAUDE.md`
+- Codex → `~/AGENTS.md`
+- OpenCode → `~/.config/opencode/AGENTS.md` (also checks `~/.claude/CLAUDE.md` for compatibility)
+- Kilo → `~/.config/kilo/AGENTS.md`
+
+`home.nix` symlinks all four of those paths to the one real file in this repo (`home/AGENTS.md`). So when any tool runs from inside e.g. `~/projects/food-time`, it just opens its own hardcoded path, follows the symlink, and reads the real file sitting in *this* repo — the two repos don't need to know about each other. Each tool also separately checks for a project-level `AGENTS.md` inside whatever repo you're actually working in, and merges both: global for cross-project preferences, project-level for that repo's specifics.
+
+Write the file:
+```bash
+mkdir -p ~/github/dotfiles/home
+nano ~/github/dotfiles/home/AGENTS.md
+```
+
+Add the four symlink entries to `home.nix` (same `mkOutOfStoreSymlink` pattern as the other configs), then:
+```bash
+cd ~/github/dotfiles
+git add home.nix home/AGENTS.md
+git commit -m "add global AGENTS.md, shared by claude/codex/opencode/kilo"
+./rebuild.sh
+```
+
 ## Repo layout
 
 ```
@@ -159,6 +184,7 @@ dotfiles/
 ├── home.nix
 ├── rebuild.sh
 └── home/
+    ├── AGENTS.md
     ├── .claude/
     │   └── settings.json
     └── .config/
@@ -186,3 +212,4 @@ dotfiles/
 - `/tmp` in WSL can get wiped if the distro/session restarts mid-task — run multi-step installs (like win32yank) as one uninterrupted block, verifying output at each step.
 - `claude-code` requires `config.allowUnfree = true;` in `flake.nix` — already set, but worth knowing if the build ever refuses it after an edit.
 - `kilo` (step 17) is deliberately outside Nix entirely — reinstall manually on a fresh machine if wanted.
+- The global `AGENTS.md` (step 19) reaches every project purely via filesystem symlinks in `home.nix` — each agent tool checks its own hardcoded path under `$HOME` on startup, independent of which repo you're working in. A project's own `AGENTS.md` (committed inside that project, not this repo) layers on top automatically.

@@ -313,3 +313,25 @@
 2026-09-04T05:42:08.009454Z  WARN herdr::raw_input: flushing lone escape after input timeout; if this follows an alt chord or focus switch it may reach the pane as plain esc bytes=[27]
 2026-09-04T05:55:42.522068Z  WARN herdr::raw_input: flushing lone escape after input timeout; if this follows an alt chord or focus switch it may reach the pane as plain esc bytes=[27]
 2026-09-04T05:56:09.099715Z  WARN herdr::raw_input: flushing lone escape after input timeout; if this follows an alt chord or focus switch it may reach the pane as plain esc bytes=[27]
+2026-09-04T05:57:40.331987Z  WARN herdr::raw_input: flushing lone escape after input timeout; if this follows an alt chord or focus switch it may reach the pane as plain esc bytes=[27]
+2026-09-04T05:57:50.362085Z  INFO herdr::logging: spawning pane terminal event="pane.spawn.start" subsystem="pane" outcome="started" pane_id=2 rows=36 cols=146 scrollback_limit_bytes=10000000
+2026-09-04T05:57:50.367153Z  INFO herdr::logging: pane child spawned event="pane.spawned" subsystem="pane" outcome="ok" pane_id=2 pid=6239
+2026-09-04T05:57:50.368973Z  INFO herdr::logging: workspace created event="workspace.create" subsystem="workspace" outcome="ok" workspace_id="w5" pane_id=2
+2026-09-04T05:57:50.368999Z  INFO herdr::logging: workspace focused event="workspace.focus" subsystem="workspace" outcome="ok" workspace_id="w5"
+2026-09-04T05:57:50.369034Z  INFO herdr::logging: tab focused event="tab.focus" subsystem="tab" outcome="ok" workspace_id="w5" tab_id="w5:t1"
+2026-09-04T05:57:55.412762Z  INFO herdr::logging: session saved event="persist.save" subsystem="persist" outcome="ok" path=/home/gilrallo/.config/herdr/session.json workspaces=2
+2026-09-04T06:02:06.969402Z  INFO herdr::logging: checking for updates event="update.check.start" subsystem="update" outcome="started"
+2026-09-04T06:03:21.017002Z  INFO herdr::logging: workspace focused event="workspace.focus" subsystem="workspace" outcome="ok" workspace_id="w4"
+2026-09-04T06:03:21.018228Z  INFO herdr::logging: tab focused event="tab.focus" subsystem="tab" outcome="ok" workspace_id="w4" tab_id="w4:t1"
+2026-09-04T06:03:26.061240Z  INFO herdr::logging: session saved event="persist.save" subsystem="persist" outcome="ok" path=/home/gilrallo/.config/herdr/session.json workspaces=2
+2026-09-04T06:06:36.471658Z  WARN herdr::raw_input: flushing lone escape after input timeout; if this follows an alt chord or focus switch it may reach the pane as plain esc bytes=[27]
+2026-09-04T06:06:53.948981Z  INFO herdr::logging: workspace focused event="workspace.focus" subsystem="workspace" outcome="ok" workspace_id="w5"
+2026-09-04T06:06:53.949100Z  INFO herdr::logging: tab focused event="tab.focus" subsystem="tab" outcome="ok" workspace_id="w5" tab_id="w5:t1"
+2026-09-04T06:06:58.992766Z  INFO herdr::logging: session saved event="persist.save" subsystem="persist" outcome="ok" path=/home/gilrallo/.config/herdr/session.json workspaces=2
+2026-09-04T06:10:15.680843Z  INFO herdr::logging: workspace focused event="workspace.focus" subsystem="workspace" outcome="ok" workspace_id="w5"
+2026-09-04T06:10:15.720505Z  INFO herdr::logging: tab focused event="tab.focus" subsystem="tab" outcome="ok" workspace_id="w5" tab_id="w5:t1"
+2026-09-04T06:10:16.922703Z  INFO herdr::logging: workspace focused event="workspace.focus" subsystem="workspace" outcome="ok" workspace_id="w4"
+2026-09-04T06:10:16.922885Z  INFO herdr::logging: tab focused event="tab.focus" subsystem="tab" outcome="ok" workspace_id="w4" tab_id="w4:t1"
+2026-09-04T06:10:21.964578Z  INFO herdr::logging: session saved event="persist.save" subsystem="persist" outcome="ok" path=/home/gilrallo/.config/herdr/session.json workspaces=2
+2026-09-04T06:10:38.261374Z  WARN herdr::raw_input: flushing lone escape after input timeout; if this follows an alt chord or focus switch it may reach the pane as plain esc bytes=[27]
+2026-09-04T06:11:25.125450Z  WARN herdr::raw_input: flushing lone escape after input timeout; if this follows an alt chord or focus switch it may reach the pane as plain esc bytes=[27]

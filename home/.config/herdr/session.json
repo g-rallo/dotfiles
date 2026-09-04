@@ -4,9 +4,9 @@
     {
       "id": "w4",
       "custom_name": null,
-      "identity_cwd": "/home/gilrallo/github",
+      "identity_cwd": "/home/gilrallo/github/dotfiles",
       "public_pane_numbers": {
-        "9": 1
+        "1": 1
       },
       "next_public_pane_number": 8,
       "public_tab_numbers": [
@@ -17,16 +17,46 @@
         {
           "custom_name": null,
           "layout": {
-            "Pane": 9
+            "Pane": 1
           },
           "panes": {
-            "9": {
-              "cwd": "/home/gilrallo/github"
+            "1": {
+              "cwd": "/home/gilrallo/github/dotfiles"
             }
           },
           "zoomed": false,
-          "focused": 9,
-          "root_pane": 9
+          "focused": 1,
+          "root_pane": 1
+        }
+      ],
+      "active_tab": 0
+    },
+    {
+      "id": "w5",
+      "custom_name": null,
+      "identity_cwd": "/home/gilrallo/github/food-time",
+      "public_pane_numbers": {
+        "2": 1
+      },
+      "next_public_pane_number": 2,
+      "public_tab_numbers": [
+        1
+      ],
+      "next_public_tab_number": 2,
+      "tabs": [
+        {
+          "custom_name": null,
+          "layout": {
+            "Pane": 2
+          },
+          "panes": {
+            "2": {
+              "cwd": "/home/gilrallo/github/food-time"
+            }
+          },
+          "zoomed": false,
+          "focused": 2,
+          "root_pane": 2
         }
       ],
       "active_tab": 0
