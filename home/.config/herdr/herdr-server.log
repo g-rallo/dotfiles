@@ -311,3 +311,5 @@
 2026-09-04T05:34:14.835237Z  INFO herdr::pane: agent changed pane=1 previous_agent=Some(Kilo) agent=None pgid=Some(540)
 2026-09-04T05:41:19.116427Z  WARN herdr::raw_input: flushing lone escape after input timeout; if this follows an alt chord or focus switch it may reach the pane as plain esc bytes=[27]
 2026-09-04T05:42:08.009454Z  WARN herdr::raw_input: flushing lone escape after input timeout; if this follows an alt chord or focus switch it may reach the pane as plain esc bytes=[27]
+2026-09-04T05:55:42.522068Z  WARN herdr::raw_input: flushing lone escape after input timeout; if this follows an alt chord or focus switch it may reach the pane as plain esc bytes=[27]
+2026-09-04T05:56:09.099715Z  WARN herdr::raw_input: flushing lone escape after input timeout; if this follows an alt chord or focus switch it may reach the pane as plain esc bytes=[27]
