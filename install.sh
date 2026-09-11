@@ -151,7 +151,21 @@ if ! have treehouse; then
 fi
 
 # ---------------------------------------------------------------------------
-# 10. firstmate (agent distro: one first mate supervising a crew)
+# 10. GitHub CLI login (interactive, one time; needed by no-mistakes/firstmate)
+# ---------------------------------------------------------------------------
+if have gh; then
+  if gh auth status >/dev/null 2>&1; then
+    log "GitHub CLI already authenticated"
+  else
+    log "Authenticating the GitHub CLI"
+    optional gh auth login
+  fi
+else
+  warn "gh not found on PATH; after 'exec zsh', run: gh auth login"
+fi
+
+# ---------------------------------------------------------------------------
+# 11. firstmate (agent distro: one first mate supervising a crew)
 # ---------------------------------------------------------------------------
 if [ ! -d "$HOME_DIR/github/firstmate/.git" ]; then
   log "Cloning firstmate"
@@ -170,15 +184,14 @@ cat <<EOF
 
 Manual steps that cannot be fully automated:
 
-  1. Authenticate GitHub CLI:   gh auth login
-  2. Authenticate Claude Code:  claude    (pick a subscription or API account)
-  3. Windows, once, in PowerShell as Administrator (or with Developer Mode on):
+  1. Authenticate Claude Code:  claude    (pick a subscription or API account)
+  2. Windows, once, in PowerShell as Administrator (or with Developer Mode on):
 
        winget install wez.wezterm
        cd "\\\\wsl\$\\${DISTRO}\\home\\${USERNAME}\\github\\dotfiles"
        powershell -ExecutionPolicy Bypass -File .\\windows\\setup.ps1
 
-  4. Start a fresh shell so zsh and the new PATH take effect:
+  3. Start a fresh shell so zsh and the new PATH take effect:
 
        exec zsh
 

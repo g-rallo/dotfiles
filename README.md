@@ -20,7 +20,7 @@ So this repo keeps that portable core and drops the rest:
 - `flake.nix` wires up nixpkgs and home-manager.
 - `home.nix` declares the environment: packages, zsh, starship, and edit-in-place config symlinks.
 - `rebuild.sh` re-applies the configuration.
-- `install.sh` bootstraps everything that is *not* a Nix package: Nix itself on a fresh machine, the zsh login shell, and the agent skills and release-binary tools below.
+- `install.sh` bootstraps everything that is *not* a Nix package: Nix itself on a fresh machine, the zsh login shell, GitHub CLI authentication, and the agent skills and release-binary tools below.
 - `windows/setup.ps1` handles the Windows side (WezTerm install and config symlink), which cannot run from WSL.
 
 The repo is self-contained: cloning it and running `install.sh` is the whole install. The configuration auto-detects your username, home directory and clone location, so the same repo works on any WSL distro or Linux user without edits.
@@ -68,7 +68,7 @@ cd dotfiles
 exec zsh
 ```
 
-`install.sh` installs Nix if missing, applies the home-manager configuration, sets zsh as the login shell, and installs the non-Nix tooling. Re-running it is safe. To apply later changes to `home.nix`, use `./rebuild.sh`.
+`install.sh` installs Nix if missing, applies the home-manager configuration, sets zsh as the login shell, authenticates the GitHub CLI, and installs the non-Nix tooling. Re-running it is safe. To apply later changes to `home.nix`, use `./rebuild.sh`.
 
 On the Windows side, once, in PowerShell:
 
@@ -82,11 +82,10 @@ Then launch WezTerm from the Start menu. It opens straight into the WSL shell wi
 
 ### After install (manual steps)
 
-These need interactive logins or Windows UI and are the only steps `install.sh` cannot finish for you:
+These need interactive logins or Windows UI. `install.sh` already runs `gh auth login` when GitHub is not yet authenticated, so the only remaining steps are:
 
-1. **GitHub CLI**: `gh auth login`
-2. **Claude Code**: run `claude` once and pick a subscription or API account
-3. **Windows WezTerm**: run `windows/setup.ps1` as described above
+1. **Claude Code**: run `claude` once and pick a subscription or API account
+2. **Windows WezTerm**: run `windows/setup.ps1` as described above
 
 For `firstmate` (multi-repo agent crews), see the [firstmate docs](https://github.com/kunchenguid/firstmate); it needs `gh` authenticated and is launched with `cd ~/github/firstmate && claude`.
 
