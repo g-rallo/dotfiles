@@ -1,22 +1,29 @@
-{ config, pkgs, ... }:
+{ config, pkgs, username, homeDirectory, dotfilesDir, ... }:
 
-let
-  dotfiles = "/home/gilrallo/github/dotfiles";
-in
 {
-  home.username = "gilrallo";
-  home.homeDirectory = "/home/gilrallo";
+  home.username = username;
+  home.homeDirectory = homeDirectory;
   home.stateVersion = "24.05";
 
   home.packages = with pkgs; [
     git
+    gh
     ripgrep
     fzf
     tmux
     neovim
     nodejs_22
+    unzip
     herdr
     claude-code
+  ];
+
+  # Writable per-user bin dirs outside the Nix store. ~/.local/bin holds
+  # release-binary tools (kilo, win32yank, no-mistakes, treehouse) and
+  # ~/.npm-global/bin holds global npm packages (gnhf); install.sh seeds both.
+  home.sessionPath = [
+    "${homeDirectory}/.local/bin"
+    "${homeDirectory}/.npm-global/bin"
   ];
 
   programs.zsh = {
@@ -50,26 +57,28 @@ in
     };
   };
 
-  # Edit-in-place: the real file stays in my repo, ~/.config just points at it.
+  # Edit-in-place: the real file stays in this repo, ~/.config just points at it.
+  # dotfilesDir is resolved from the environment at switch time (see flake.nix),
+  # so the repo can live anywhere and the config still links to the live files.
   home.file.".config/wezterm".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/wezterm";
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/home/.config/wezterm";
   home.file.".config/nvim".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/nvim";
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/home/.config/nvim";
   home.file.".config/herdr".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/herdr";
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/home/.config/herdr";
   home.file.".claude/settings.json".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.claude/settings.json";
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/home/.claude/settings.json";
 
   home.file."AGENTS.md".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/AGENTS.md";
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/home/AGENTS.md";
   home.file.".claude/CLAUDE.md".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/AGENTS.md";
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/home/AGENTS.md";
   home.file.".codex/AGENTS.md".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/AGENTS.md";
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/home/AGENTS.md";
   home.file.".config/opencode/AGENTS.md".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/AGENTS.md";
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/home/AGENTS.md";
   home.file.".config/kilo/AGENTS.md".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/AGENTS.md";
- 
- programs.home-manager.enable = true;
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/home/AGENTS.md";
+
+  programs.home-manager.enable = true;
 }
