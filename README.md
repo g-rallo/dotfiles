@@ -1,215 +1,151 @@
-# Reproducible Dev Environment (WSL2 + home-manager + WezTerm)
+# Reproducible agentic dev environment (WSL2 + home-manager + WezTerm)
 
-Windows adaptation of Kun Chen's [nix-darwin dotfiles](https://github.com/kunchenguid/dotfiles) workflow.
+A one-command setup for a full agentic development environment on a Windows laptop. Clone the repo, run `./install.sh`, and you get WSL2 packages, shell, editor and agent tooling without working through a list of manual steps:
 
-## Why this shape
-
-Kun's setup uses **nix-darwin**, which only runs on macOS — Nix has no native Windows build, and nix-darwin can't run even under WSL2 (it targets Darwin specifically). The part that *is* portable is the **home-manager** layer (user-level packages, shell, and agentic-workflow config) — home-manager runs standalone on any Linux, including WSL2, with no OS-level (nix-darwin/Homebrew) component required.
-
-So this setup drops `configuration.nix` entirely (nothing on Windows for it to configure — no macOS defaults, no Homebrew) and keeps only:
-- **`flake.nix`** — wires up nixpkgs + home-manager (no nix-darwin, no nix-homebrew)
-- **`home.nix`** — the actual environment: packages, zsh, starship, dotfile symlinks
-- **`rebuild.sh`** — re-applies the config, equivalent to Kun's `darwin-rebuild switch`
-
-**WezTerm split:** WezTerm is a native Windows GUI app, installed via `winget`, not through `home.nix`. It launches a tab running `wsl.exe`, which drops you into the Nix-managed WSL shell. A Linux-built WezTerm inside WSL has no window to draw into (WSL is headless by default) and can't be the thing you launch from the Windows taskbar — so it stays on the Windows side, config symlinked in from the repo, same way Kun's `home/.config/wezterm/wezterm.lua` is symlinked into place on macOS.
-
-**Edit-in-place configs (`wezterm`, `nvim`, `herdr`, `claude`):** rather than `home.file` copying config into the Nix store at build time (which would need a rebuild after every edit), these use `config.lib.file.mkOutOfStoreSymlink` — a real symlink straight to the live files in this repo, so edits take effect immediately with no `./rebuild.sh` needed. The WezTerm one (`~/.config/wezterm`) only matters if some WSL-side tool reads it — the app itself runs on Windows and reads `%USERPROFILE%\.wezterm.lua` (a separate, manually-created Windows symlink). The rest are fully active, since those tools run inside WSL.
-
-## Prerequisites
-
-- WSL2 already set up, with an Ubuntu distro installed (`wsl -d Ubuntu`)
-- Windows 10/11 with `winget` available
-
-## Steps (fresh machine)
-
-### 1. Install Nix inside WSL Ubuntu
 ```bash
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm
-```
-Restart the WSL shell afterward so Nix is on `PATH`.
-
-### 2. Clone this repo inside the Linux filesystem
-Keep it native to WSL — not under `/mnt/c/...` — for filesystem performance:
-```bash
-mkdir -p ~/github
-cd ~/github
-git clone <this-repo-url> dotfiles
+mkdir -p ~/github && cd ~/github
+git clone git@github.com:g-rallo/dotfiles.git
 cd dotfiles
+./install.sh
 ```
 
-### 3. Check `home.nix` matches your actual Linux username
-`whoami` in WSL gives the real value — `home.username`, `home.homeDirectory`, and the `dotfiles` path in `home.nix` must all match exactly, and `flake.nix`'s `homeConfigurations` key must match the username too. Edit if needed.
+## What this is
 
-### 4. Stage the files in git
-Nix flakes only see files tracked by git (staged is enough, doesn't need to be committed):
+This is a Windows adaptation of Kun Chen's [nix-darwin dotfiles](https://github.com/kunchenguid/dotfiles) workflow, extended with the agent tooling that Kun ships separately (skills, `no-mistakes`, `gnhf`, `treehouse`, `firstmate`).
+
+Kun's setup uses **nix-darwin**, which only runs on macOS: Nix has no native Windows build, and nix-darwin cannot run even under WSL2 because it targets Darwin specifically. The part that *is* portable is the **home-manager** layer (user-level packages, shell, editor, and agent configuration), which runs standalone on any Linux, WSL2 included, with no OS-level component required.
+
+So this repo keeps that portable core and drops the rest:
+
+- `flake.nix` wires up nixpkgs and home-manager.
+- `home.nix` declares the environment: packages, zsh, starship, and edit-in-place config symlinks.
+- `rebuild.sh` re-applies the configuration.
+- `install.sh` bootstraps everything that is *not* a Nix package: Nix itself on a fresh machine, the zsh login shell, GitHub CLI authentication, and the agent skills and release-binary tools below.
+- `windows/setup.ps1` handles the Windows side (WezTerm install and config symlink), which cannot run from WSL.
+
+The repo is self-contained: cloning it and running `install.sh` is the whole install. The configuration auto-detects your username, home directory and clone location, so the same repo works on any WSL distro or Linux user without edits.
+
+## Features
+
+| Area | What you get |
+| --- | --- |
+| Reproducible packages | Nix + home-manager (`flake.nix`, `home.nix`) instead of ad-hoc `apt`/`winget` installs |
+| Shell | zsh with autosuggestions and syntax highlighting, [starship](https://starship.rs) prompt |
+| Editor | neovim + lazy.nvim, oil.nvim and snacks.nvim navigation, Windows clipboard via `win32yank` |
+| Terminal | WezTerm, a native Windows GUI app launched from the Start menu into the WSL shell |
+| Agent CLI | Claude Code (nixpkgs) and Kilo Code CLI (multi-provider, 500+ models) |
+| Shared agent config | One `AGENTS.md` symlinked to the path every tool checks (Claude, Codex, OpenCode, Kilo) |
+| Agent skills | [lavish](#agent-skills), [no-mistakes](#agent-skills), [find-skills](#agent-skills) |
+| Agent tooling | `no-mistakes` (validation gate), `gnhf` (overnight agent loop), `treehouse` (worktree pool), `firstmate` (multi-repo crew), `gh` (GitHub CLI) |
+| Re-runnable | `install.sh` is idempotent; `./rebuild.sh` re-applies after config edits |
+
+### Agent skills
+
+`install.sh` installs these user-level skills under `~/.agents/skills`, shared across every agent tool on the machine (Claude Code, Codex, OpenCode, Kilo, and the rest):
+
+- **[lavish](https://github.com/kunchenguid/lavish-axi)** - turns agent responses into rich, annotatable HTML pages (plans, comparisons, diagrams, tables, diffs) that you review in the browser and send feedback on. Invoked as `/lavish` or through the `lavish-axi` CLI.
+- **[no-mistakes](https://github.com/kunchenguid/no-mistakes)** - the `/no-mistakes` skill: validates committed work through a local pipeline (AI review, tests, docs, lint) and only then pushes it to your real remote and opens a PR.
+- **[find-skills](https://github.com/vercel-labs/skills)** - discovers and installs other skills from GitHub, so you can extend the setup with `npx skills find` and `npx skills add`.
+
+## Quick start
+
+### Requirements
+
+- Windows 10 or 11 with WSL2 and an Ubuntu distro installed (`wsl -d Ubuntu`).
+- Network access during install.
+- Sudo/admin rights once: `install.sh` adds zsh to `/etc/shells` and installs Nix; the Windows script creates a symlink in your user profile.
+- This repo cloned **inside the Linux filesystem** (for example `~/github/dotfiles`), never under `/mnt/c/...`.
+
+Nix, zsh, the packages, the skills and the agent tools are all installed by `install.sh`; you do not need to install them first.
+
+### Recommendations
+
+- **WezTerm** on the Windows side for the intended experience. It is the terminal the config targets; a plain Windows Terminal works too, you just lose the tab-into-WSL setup.
+- Keep project repos on the Linux side (`~/github`, `~/projects`), not under `/mnt/c/...`, for filesystem performance.
+- A **Claude account** (subscription or Anthropic Console) and a GitHub account for the agent tooling. Logins are interactive and are the only manual steps.
+
+### Install and launch
+
+On the WSL side:
+
 ```bash
-git add -A
-git commit -m "initial home-manager setup"
+mkdir -p ~/github && cd ~/github
+git clone git@github.com:g-rallo/dotfiles.git
+cd dotfiles
+./install.sh
+exec zsh
 ```
 
-### 5. First-run home-manager
-```bash
-nix run home-manager/master -- switch --flake .#<your-username>
-```
+`install.sh` installs Nix if missing, applies the home-manager configuration, sets zsh as the login shell, authenticates the GitHub CLI, and installs the non-Nix tooling. Re-running it is safe. To apply later changes to `home.nix`, use `./rebuild.sh`.
 
-### 6. From now on, apply changes with
-```bash
-./rebuild.sh
-```
+On the Windows side, once, in PowerShell:
 
-### 6a. Make zsh your login shell
-home-manager installs zsh but doesn't change which shell WSL logs you into — that's a system-level setting outside its reach, set once per distro:
-```bash
-which zsh   # confirm it's on PATH
-chsh -s $(which zsh)
-```
-If it errors that the path isn't a valid shell:
-```bash
-echo $(which zsh) | sudo tee -a /etc/shells
-chsh -s $(which zsh)
-```
-Restart the WezTerm tab afterward. `echo $SHELL` should print the zsh path.
-
-### 7. Install WezTerm on Windows
-In PowerShell (Windows side, not WSL):
 ```powershell
 winget install wez.wezterm
+cd "\\wsl$\Ubuntu\home\<your-wsl-user>\github\dotfiles"
+powershell -ExecutionPolicy Bypass -File .\windows\setup.ps1
 ```
 
-### 8. Symlink the WezTerm config from the repo
-PowerShell as Administrator (or with Developer Mode enabled):
-```powershell
-New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.wezterm.lua" -Target "\\wsl$\Ubuntu\home\<your-username>\github\dotfiles\home\.config\wezterm\wezterm.lua"
-```
-Adjust the distro name/path if different on the new machine. Verify with:
-```powershell
-Get-Item "$env:USERPROFILE\.wezterm.lua" | Select-Object FullName, LinkType, Target
-```
-The config sets `default_prog` to `wsl.exe` with `--cd '~'` — without that flag, WezTerm passes its own working directory through and you land in `/mnt/c/Users/...` instead of the Linux home.
+Then launch WezTerm from the Start menu. It opens straight into the WSL shell with everything on `PATH`.
 
-### 9. Put project repos on the Linux side
-```bash
-mkdir -p ~/projects
-cd ~/projects
-git clone <your-repo-url>
-```
-Not under `/mnt/c/...` — same performance reason as step 2.
+### After install (manual steps)
 
-### 10. Install win32yank (WSL clipboard bridge for nvim)
-`unnamedplus` in nvim does nothing on WSL by itself — no X11/Wayland clipboard provider like on native Linux or macOS's `pbcopy`. `win32yank` bridges it to the real Windows clipboard. Not in nixpkgs, installed manually — run as one block so `/tmp` doesn't get wiped mid-way by a session restart:
-```bash
-curl -sLo /tmp/win32yank.zip https://github.com/equalsraf/win32yank/releases/latest/download/win32yank-x64.zip
-rm -rf /tmp/win32yank_extracted
-mkdir /tmp/win32yank_extracted
-unzip -o /tmp/win32yank.zip -d /tmp/win32yank_extracted
-sudo mv /tmp/win32yank_extracted/win32yank.exe /usr/local/bin/win32yank.exe
-sudo chmod +x /usr/local/bin/win32yank.exe
-win32yank.exe -h
-```
-Last line should print help/usage text (not `-v`, unsupported) — confirms it's installed and executable.
+These need interactive logins or Windows UI. `install.sh` already runs `gh auth login` when GitHub is not yet authenticated, so the only remaining steps are:
 
-### 11. nvim config
-Already in the repo (`home/.config/nvim/`), symlinked automatically via `home.nix`. No rebuild needed for edits — it's an out-of-store symlink, live immediately. Verify with `nvim` → `:checkhealth` (clipboard section should show `win32yank.exe` as the provider) → test `yy` then paste into a Windows app.
+1. **Claude Code**: run `claude` once and pick a subscription or API account
+2. **Windows WezTerm**: run `windows/setup.ps1` as described above
 
-### 12. lazy.nvim plugin manager
-Already wired in the repo (`home/.config/nvim/lua/plugin.lua`) — only real dependency is `git` on `PATH`, already covered. First `nvim` launch after cloning bootstraps lazy.nvim itself; confirm with `:Lazy` (`q` to close).
-
-### 13. Navigation plugins (oil.nvim, snacks.nvim)
-Already in the repo (`home/.config/nvim/lua/plugins/navigation.lua`). `snacks.picker.grep()` uses **ripgrep** under the hood — already in `home.packages`. lazy.nvim auto-installs both on next `nvim` launch. Test: `<leader>e` file browser, `<leader>f` find files, `<leader>s` grep, `<leader>b` buffers.
-
-### 14. Install herdr
-Herdr is an agent-orchestration terminal tool Kun installs via Homebrew in `configuration.nix` (macOS-only, no equivalent here). It's packaged directly in nixpkgs, so it's just in `home.packages` — no separate flake input needed (a Herdr-maintained flake builds from source and is slow/fragile; a community `herdr-nix` flake hit a registry resolution error; plain nixpkgs was the reliable path). Covered by `./rebuild.sh`. Verify: `herdr --version`.
-
-### 15. Install Claude Code
-Also via Homebrew in Kun's `configuration.nix` — no equivalent here either. Packaged in nixpkgs, but it's an **unfree** package, so `flake.nix` needs `config.allowUnfree = true;` in its `import nixpkgs { ... }` call, or the build refuses it outright. Already set in this repo's `flake.nix`. Covered by `./rebuild.sh`. Verify: `claude --version`, then `cc` (the alias) to launch it.
-
-On first launch, choose between:
-- **Claude account with subscription** — uses an existing claude.ai Pro/Max/Team plan, no separate billing.
-- **Anthropic Console account** — separate pay-as-you-go API billing, independent of any claude.ai subscription.
-
-Claude Code only ever talks to Claude models — neither login option changes that. For genuine multi-provider flexibility, see step 17 (Kilo Code).
-
-### 16. Symlink herdr config and Claude settings
-Already declared in `home.nix`, but the target paths must exist in the repo *before* rebuilding, or home-manager errors with a dangling-symlink/clobber message. If herdr already created a real `~/.config/herdr` before the symlink existed (e.g. from running it once before this step), home-manager will refuse to overwrite it — back it up first:
-```bash
-[ -L ~/.config/herdr ] || mv ~/.config/herdr ~/.config/herdr.bak
-```
-Then `./rebuild.sh`.
-
-### 17. Kilo Code CLI (optional, non-essential)
-Multi-model agentic CLI (500+ providers, unlike Claude Code which is Claude-only) — kept **outside** `home.nix` deliberately, since it's not essential and doesn't need to be reproducible. Installed via the project's own script rather than `npm install -g`, since npm's global installs fail with `EACCES` when `node` comes from the read-only Nix store:
-```bash
-curl -fsSL https://kilo.ai/cli/install | bash
-```
-This installs a standalone binary (commonly to `~/.local/bin` or `~/.kilo/bin`) and normally updates shell config itself — but if `which kilo` comes up empty afterward, **do not** try editing `~/.zshrc` directly: home-manager generates it as a symlink into the read-only Nix store, so any write to it fails with permission denied. Symlink the binary into a standard system `PATH` location instead:
-```bash
-find ~ -maxdepth 4 -iname "kilo" -type f 2>/dev/null   # find where it actually landed
-sudo ln -s <path from above> /usr/local/bin/kilo
-```
-Verify: `which kilo`, then `kilo` → `/connect` inside it to add provider API keys.
-
-### 18. Launch WezTerm
-It should open directly into the WSL shell, with home-manager's packages and aliases (`cc`, `co`) already on `PATH`.
-
-### 19. Global AGENTS.md, shared across Claude Code, Codex, OpenCode, and Kilo
-Kun's `home/AGENTS.md` holds general agent-behavior preferences (commit message conventions, how to approach bug fixes, etc.) — the same idea as `CLAUDE.md`, but a cross-tool standard rather than Anthropic-specific. His note: *"Agent configs (Claude, Codex, opencode all share one AGENTS.md)."*
-
-**How this reaches every project, without git being involved at all:** each agent tool has a hardcoded path it checks in your home directory on every startup, regardless of which project you're currently working in — that's the tool's own lookup logic, unrelated to any repo:
-- Claude Code → `~/.claude/CLAUDE.md`
-- Codex → `~/AGENTS.md`
-- OpenCode → `~/.config/opencode/AGENTS.md` (also checks `~/.claude/CLAUDE.md` for compatibility)
-- Kilo → `~/.config/kilo/AGENTS.md`
-
-`home.nix` symlinks all four of those paths to the one real file in this repo (`home/AGENTS.md`). So when any tool runs from inside e.g. `~/projects/food-time`, it just opens its own hardcoded path, follows the symlink, and reads the real file sitting in *this* repo — the two repos don't need to know about each other. Each tool also separately checks for a project-level `AGENTS.md` inside whatever repo you're actually working in, and merges both: global for cross-project preferences, project-level for that repo's specifics.
-
-Write the file:
-```bash
-mkdir -p ~/github/dotfiles/home
-nano ~/github/dotfiles/home/AGENTS.md
-```
-
-Add the four symlink entries to `home.nix` (same `mkOutOfStoreSymlink` pattern as the other configs), then:
-```bash
-cd ~/github/dotfiles
-git add home.nix home/AGENTS.md
-git commit -m "add global AGENTS.md, shared by claude/codex/opencode/kilo"
-./rebuild.sh
-```
+For `firstmate` (multi-repo agent crews), see the [firstmate docs](https://github.com/kunchenguid/firstmate); it needs `gh` authenticated and is launched with `cd ~/github/firstmate && claude`.
 
 ## Repo layout
 
 ```
 dotfiles/
-├── flake.nix
-├── home.nix
-├── rebuild.sh
+├── flake.nix              # nixpkgs + home-manager inputs, per-user output
+├── flake.lock
+├── home.nix               # packages, zsh, starship, config symlinks
+├── rebuild.sh             # re-apply home-manager after config edits
+├── install.sh             # one-command bootstrap for a fresh machine
+├── .gitignore
+├── windows/
+│   └── setup.ps1          # WezTerm install + config symlink (Windows side)
 └── home/
-    ├── AGENTS.md
+    ├── AGENTS.md          # shared global agent instructions
+    ├── CLAUDE.md
     ├── .claude/
     │   └── settings.json
     └── .config/
-        ├── wezterm/
-        │   └── wezterm.lua
+        ├── wezterm/wezterm.lua
         ├── herdr/
         └── nvim/
             ├── init.lua
+            ├── lazy-lock.json
             └── lua/
                 ├── vim_config.lua
+                ├── keys.lua
                 ├── plugin.lua
                 └── plugins/
-                    └── navigation.lua
+                    ├── git.lua
+                    ├── navigation.lua
+                    └── ui.lua
 ```
-`kilo` (step 17) is intentionally **not** in this repo — installed manually outside Nix, doesn't reappear automatically on a fresh machine.
+
+Everything installed by `install.sh` but not tracked here (`kilo`, the skills, `no-mistakes`, `gnhf`, `treehouse`, `firstmate`) lives outside the repo, in `~/.local/bin`, `~/.npm-global`, `~/.agents/skills`, or its own clone.
+
+## Design notes
+
+- **home-manager, not nix-darwin.** No `configuration.nix`, no Homebrew: this is the portable user-level layer only.
+- **Auto-detected identity.** `flake.nix` reads `USER`, `HOME` and `DOTFILES_DIR` from the environment (`rebuild.sh` runs home-manager with `--impure`), so nothing is hardcoded to a particular user or clone path.
+- **Edit-in-place configs.** `wezterm`, `nvim`, `herdr`, `.claude/settings.json` and the `AGENTS.md` symlinks use `config.lib.file.mkOutOfStoreSymlink`, a real symlink to the live files in this repo, so edits take effect immediately with no rebuild. `./rebuild.sh` is only for changes to `home.nix` itself.
+- **WezTerm stays on Windows.** It is a native Windows GUI app; a Linux-built WezTerm inside headless WSL has no window to draw into. It reads `%USERPROFILE%\.wezterm.lua`, which `windows/setup.ps1` symlinks to the config in this repo.
+- **External tools are deliberately not in Nix.** `kilo`, `gnhf`, `no-mistakes`, `treehouse` and `firstmate` are optional, fast-moving, or not packaged, so `install.sh` installs them into writable per-user locations instead of the read-only Nix store.
 
 ## Notes for future changes
 
-- Edit `home.nix`, then run `./rebuild.sh` — same workflow as Kun's mac setup, just Linux underneath.
-- New files added to the repo need `git add` before a rebuild will pick them up.
-- `wezterm`, `nvim`, `herdr`, and `.claude/settings.json` are all out-of-store symlinks — edits are picked up immediately, no rebuild needed. `./rebuild.sh` is only for changes to `home.nix` itself.
-- Shell is zsh, not the WSL/Ubuntu default bash — `chsh -s $(which zsh)` (step 6a) only needs to run once per machine/distro.
-- **`~/.zshrc` is not directly editable.** home-manager generates it as a symlink into the read-only Nix store — any manual edit fails with permission denied. Shell config changes must go through `home.nix` (`programs.zsh.shellAliases`, `home.sessionPath`), then `./rebuild.sh`.
-- Pasting into vim works out of the box via WezTerm's bracketed paste (`Ctrl+Shift+V`); copying *out* of vim to the Windows clipboard goes through `win32yank` (step 10) — not a Nix package, installed manually, doesn't survive a fresh machine automatically.
-- `/tmp` in WSL can get wiped if the distro/session restarts mid-task — run multi-step installs (like win32yank) as one uninterrupted block, verifying output at each step.
-- `claude-code` requires `config.allowUnfree = true;` in `flake.nix` — already set, but worth knowing if the build ever refuses it after an edit.
-- `kilo` (step 17) is deliberately outside Nix entirely — reinstall manually on a fresh machine if wanted.
-- The global `AGENTS.md` (step 19) reaches every project purely via filesystem symlinks in `home.nix` — each agent tool checks its own hardcoded path under `$HOME` on startup, independent of which repo you're working in. A project's own `AGENTS.md` (committed inside that project, not this repo) layers on top automatically.
+- Edit `home.nix`, then run `./rebuild.sh`. New files added to the repo need `git add` before a rebuild will pick them up.
+- **`~/.zshrc` is not directly editable.** home-manager generates it as a symlink into the read-only Nix store, so manual edits fail. Shell changes go through `home.nix` (`programs.zsh.shellAliases`, `home.sessionPath`), then `./rebuild.sh`.
+- `~/.local/bin` and `~/.npm-global/bin` are on `PATH` via `home.sessionPath`. Release-binary tools and global npm packages land there.
+- `win32yank` and `kilo` are installed into `~/.local/bin`; `gnhf` is a global npm package under `~/.npm-global`; `no-mistakes` and `treehouse` prefer `~/.local/bin` when it is on `PATH`.
+- `claude-code` is unfree, so `flake.nix` sets `config.allowUnfree = true;`.
+- `/tmp` in WSL can be wiped if the distro restarts mid-task; run multi-step installs (like `install.sh`) as one uninterrupted block.
+- herdr writes runtime logs and sockets into its config dir, which is symlinked into this repo; those paths are gitignored so the working tree stays clean.

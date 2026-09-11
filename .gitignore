@@ -1,0 +1,17 @@
+# herdr writes runtime state into its config dir, which is symlinked into this repo
+home/.config/herdr/*.log
+home/.config/herdr/*.sock
+home/.config/herdr/session.json
+home/.config/herdr/release-notes.json
+home/.config/herdr/.plugins.lock
+
+# lavish HTML review artifacts
+.lavish/
+
+# in-repo agent skill copies written by tools
+.agents/
+
+# editor / OS junk
+*.sw[a-p]
+*~
+.DS_Store
