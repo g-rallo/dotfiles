@@ -35,9 +35,17 @@ The repo is self-contained: cloning it and running `install.sh` is the whole ins
 | Terminal | WezTerm, a native Windows GUI app launched from the Start menu into the WSL shell |
 | Agent CLI | Claude Code (nixpkgs) and Kilo Code CLI (multi-provider, 500+ models) |
 | Shared agent config | One `AGENTS.md` symlinked to the path every tool checks (Claude, Codex, OpenCode, Kilo) |
-| Agent skills | `lavish` (annotatable HTML review pages), `no-mistakes`, `find-skills` |
+| Agent skills | [lavish](#agent-skills), [no-mistakes](#agent-skills), [find-skills](#agent-skills) |
 | Agent tooling | `no-mistakes` (validation gate), `gnhf` (overnight agent loop), `treehouse` (worktree pool), `firstmate` (multi-repo crew), `gh` (GitHub CLI) |
 | Re-runnable | `install.sh` is idempotent; `./rebuild.sh` re-applies after config edits |
+
+### Agent skills
+
+`install.sh` installs these user-level skills under `~/.agents/skills`, shared across every agent tool on the machine (Claude Code, Codex, OpenCode, Kilo, and the rest):
+
+- **[lavish](https://github.com/kunchenguid/lavish-axi)** - turns agent responses into rich, annotatable HTML pages (plans, comparisons, diagrams, tables, diffs) that you review in the browser and send feedback on. Invoked as `/lavish` or through the `lavish-axi` CLI.
+- **[no-mistakes](https://github.com/kunchenguid/no-mistakes)** - the `/no-mistakes` skill: validates committed work through a local pipeline (AI review, tests, docs, lint) and only then pushes it to your real remote and opens a PR.
+- **[find-skills](https://github.com/vercel-labs/skills)** - discovers and installs other skills from GitHub, so you can extend the setup with `npx skills find` and `npx skills add`.
 
 ## Quick start
 
