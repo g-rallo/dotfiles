@@ -1,4 +1,4 @@
-  { config, pkgs, username, homeDirectory, workspaceDir, ... }:
+{ config, pkgs, username, homeDirectory, workspaceDir, ... }:
 
 {
   home.username = username;
