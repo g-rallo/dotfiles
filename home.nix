@@ -19,10 +19,12 @@
   ];
 
   # Writable per-user bin dirs outside the Nix store. ~/.local/bin holds
-  # release-binary tools (kilo, win32yank, no-mistakes, treehouse) and
-  # ~/.npm-global/bin holds global npm packages (gnhf); install.sh seeds both.
+  # release-binary tools (win32yank, no-mistakes, treehouse),
+  # ~/.opencode/bin is OpenCode's own installer location, and
+  # ~/.npm-global/bin holds global npm packages (gnhf); install.sh seeds them.
   home.sessionPath = [
     "${homeDirectory}/.local/bin"
+    "${homeDirectory}/.opencode/bin"
     "${homeDirectory}/.npm-global/bin"
   ];
 
@@ -76,8 +78,6 @@
   home.file.".codex/AGENTS.md".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/home/AGENTS.md";
   home.file.".config/opencode/AGENTS.md".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/home/AGENTS.md";
-  home.file.".config/kilo/AGENTS.md".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/home/AGENTS.md";
 
   programs.home-manager.enable = true;

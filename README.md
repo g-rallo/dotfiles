@@ -33,15 +33,15 @@ The repo is self-contained: cloning it and running `install.sh` is the whole ins
 | Shell | zsh with autosuggestions and syntax highlighting, [starship](https://starship.rs) prompt |
 | Editor | neovim + lazy.nvim, oil.nvim and snacks.nvim navigation, Windows clipboard via `win32yank` |
 | Terminal | WezTerm, a native Windows GUI app launched from the Start menu into the WSL shell |
-| Agent CLI | Claude Code (nixpkgs) and Kilo Code CLI (multi-provider, 500+ models) |
-| Shared agent config | One `AGENTS.md` symlinked to the path every tool checks (Claude, Codex, OpenCode, Kilo) |
+| Agent CLI | Claude Code (nixpkgs) and OpenCode (multi-provider CLI) |
+| Shared agent config | One `AGENTS.md` symlinked to the path every tool checks (Claude, Codex, OpenCode) |
 | Agent skills | [lavish](#agent-skills), [no-mistakes](#agent-skills), [find-skills](#agent-skills) |
 | Agent tooling | `no-mistakes` (validation gate), `gnhf` (overnight agent loop), `treehouse` (worktree pool), `firstmate` (multi-repo crew), `gh` (GitHub CLI) |
 | Re-runnable | `install.sh` is idempotent; `./rebuild.sh` re-applies after config edits |
 
 ### Agent skills
 
-`install.sh` installs these user-level skills under `~/.agents/skills`, shared across every agent tool on the machine (Claude Code, Codex, OpenCode, Kilo, and the rest):
+`install.sh` installs these user-level skills under `~/.agents/skills`, shared across every agent tool on the machine (Claude Code, Codex, OpenCode, and the rest):
 
 - **[lavish](https://github.com/kunchenguid/lavish-axi)** - turns agent responses into rich, annotatable HTML pages (plans, comparisons, diagrams, tables, diffs) that you review in the browser and send feedback on. Invoked as `/lavish` or through the `lavish-axi` CLI.
 - **[no-mistakes](https://github.com/kunchenguid/no-mistakes)** - the `/no-mistakes` skill: validates committed work through a local pipeline (AI review, tests, docs, lint) and only then pushes it to your real remote and opens a PR.
@@ -62,7 +62,7 @@ Nix, zsh, the packages, the skills and the agent tools are all installed by `ins
 
 - **WezTerm** on the Windows side for the intended experience. It is the terminal the config targets; a plain Windows Terminal works too, you just lose the tab-into-WSL setup.
 - Keep project repos on the Linux side (`~/github`, `~/projects`), not under `/mnt/c/...`, for filesystem performance.
-- A **Claude account** (subscription or Anthropic Console) and a GitHub account for the agent tooling. Logins are interactive and are the only manual steps.
+- A **Claude account** (subscription or Anthropic Console) and/or an OpenCode-compatible provider account, plus a GitHub account for the agent tooling. Logins are interactive and are the only manual steps.
 
 ### Install and launch
 
@@ -92,7 +92,7 @@ Then launch WezTerm from the Start menu. It opens straight into the WSL shell wi
 
 These need interactive logins or Windows UI. `install.sh` already runs `gh auth login` when GitHub is not yet authenticated, so the only remaining steps are:
 
-1. **Claude Code**: run `claude` once and pick a subscription or API account
+1. **Agent CLIs**: run `claude` and `opencode auth login` once and pick a subscription or API account
 2. **Windows WezTerm**: run `windows/setup.ps1` as described above
 
 For `firstmate` (multi-repo agent crews), see the [firstmate docs](https://github.com/kunchenguid/firstmate); it needs `gh` authenticated and is launched with `cd ~/github/firstmate && claude`.
@@ -130,7 +130,7 @@ dotfiles/
                     └── ui.lua
 ```
 
-Everything installed by `install.sh` but not tracked here (`kilo`, the skills, `no-mistakes`, `gnhf`, `treehouse`, `firstmate`) lives outside the repo, in `~/.local/bin`, `~/.npm-global`, `~/.agents/skills`, or its own clone.
+Everything installed by `install.sh` but not tracked here (`opencode`, the skills, `no-mistakes`, `gnhf`, `treehouse`, `firstmate`) lives outside the repo, in `~/.opencode/bin`, `~/.local/bin`, `~/.npm-global`, `~/.agents/skills`, or its own clone.
 
 ## Design notes
 
@@ -138,14 +138,14 @@ Everything installed by `install.sh` but not tracked here (`kilo`, the skills, `
 - **Auto-detected identity.** `flake.nix` reads `USER`, `HOME` and `DOTFILES_DIR` from the environment (`rebuild.sh` runs home-manager with `--impure`), so nothing is hardcoded to a particular user or clone path.
 - **Edit-in-place configs.** `wezterm`, `nvim`, `herdr`, `.claude/settings.json` and the `AGENTS.md` symlinks use `config.lib.file.mkOutOfStoreSymlink`, a real symlink to the live files in this repo, so edits take effect immediately with no rebuild. `./rebuild.sh` is only for changes to `home.nix` itself.
 - **WezTerm stays on Windows.** It is a native Windows GUI app; a Linux-built WezTerm inside headless WSL has no window to draw into. It reads `%USERPROFILE%\.wezterm.lua`, which `windows/setup.ps1` symlinks to the config in this repo.
-- **External tools are deliberately not in Nix.** `kilo`, `gnhf`, `no-mistakes`, `treehouse` and `firstmate` are optional, fast-moving, or not packaged, so `install.sh` installs them into writable per-user locations instead of the read-only Nix store.
+- **External tools are deliberately not in Nix.** `opencode`, `gnhf`, `no-mistakes`, `treehouse` and `firstmate` are optional, fast-moving, or not packaged, so `install.sh` installs them into writable per-user locations instead of the read-only Nix store.
 
 ## Notes for future changes
 
 - Edit `home.nix`, then run `./rebuild.sh`. New files added to the repo need `git add` before a rebuild will pick them up.
 - **`~/.zshrc` is not directly editable.** home-manager generates it as a symlink into the read-only Nix store, so manual edits fail. Shell changes go through `home.nix` (`programs.zsh.shellAliases`, `home.sessionPath`), then `./rebuild.sh`.
-- `~/.local/bin` and `~/.npm-global/bin` are on `PATH` via `home.sessionPath`. Release-binary tools and global npm packages land there.
-- `win32yank` and `kilo` are installed into `~/.local/bin`; `gnhf` is a global npm package under `~/.npm-global`; `no-mistakes` and `treehouse` prefer `~/.local/bin` when it is on `PATH`.
+- `~/.local/bin`, `~/.opencode/bin` and `~/.npm-global/bin` are on `PATH` via `home.sessionPath`. Release-binary tools and global npm packages land there. OpenCode's installer runs with `--no-modify-path` so it never touches `~/.zshrc`.
+- `win32yank` is installed into `~/.local/bin`; `opencode` installs itself into `~/.opencode/bin`; `gnhf` is a global npm package under `~/.npm-global`; `no-mistakes` and `treehouse` prefer `~/.local/bin` when it is on `PATH`.
 - `claude-code` is unfree, so `flake.nix` sets `config.allowUnfree = true;`.
 - `/tmp` in WSL can be wiped if the distro restarts mid-task; run multi-step installs (like `install.sh`) as one uninterrupted block.
 - herdr writes runtime logs and sockets into its config dir, which is symlinked into this repo; those paths are gitignored so the working tree stays clean.
