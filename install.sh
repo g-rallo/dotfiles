@@ -180,7 +180,7 @@ Manual steps that cannot be fully automated:
 
   1. Authenticate the agent CLIs:
        claude      (pick a subscription or API account)
-       opencode    (pick a provider or API account)
+       opencode auth login  (pick a provider or API account)
   2. Windows, once, in PowerShell as Administrator (or with Developer Mode on):
 
        winget install wez.wezterm
