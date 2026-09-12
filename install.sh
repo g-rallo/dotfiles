@@ -6,7 +6,7 @@
 #
 # Installs Nix if missing, applies the home-manager configuration, and then
 # installs the agent tooling that lives outside Nix (skills, no-mistakes, gnhf,
-# treehouse, firstmate, kilo, win32yank). Re-running it is safe: every step
+# treehouse, firstmate, opencode, win32yank). Re-running it is safe: every step
 # checks whether it is already done.
 #
 set -euo pipefail
@@ -19,7 +19,7 @@ HOME_DIR="${HOME:-/home/$USERNAME}"
 export DOTFILES_DIR="$REPO_DIR"
 
 # Ensure anything install.sh drops into these dirs is reachable immediately.
-export PATH="$HOME_DIR/.local/bin:$HOME_DIR/.npm-global/bin:$PATH"
+export PATH="$HOME_DIR/.local/bin:$HOME_DIR/.opencode/bin:$HOME_DIR/.npm-global/bin:$PATH"
 
 log() { printf '\n\033[1;34m==>\033[0m \033[1m%s\033[0m\n' "$*"; }
 warn() { printf '\033[1;33mwarning:\033[0m %s\n' "$*" >&2; }
@@ -90,20 +90,14 @@ if [ ! -x "$HOME_DIR/.local/bin/win32yank.exe" ]; then
 fi
 
 # ---------------------------------------------------------------------------
-# 5. Kilo Code CLI (multi-model agentic CLI, deliberately outside Nix)
+# 5. OpenCode CLI (multi-model agentic CLI, deliberately outside Nix)
 # ---------------------------------------------------------------------------
-if ! have kilo; then
-  log "Installing Kilo Code CLI"
-  curl -fsSL https://kilo.ai/cli/install | bash || warn "kilo installer reported an error"
-fi
-if ! have kilo; then
-  kilo_bin="$(find "$HOME_DIR" -maxdepth 4 -type f -name kilo 2>/dev/null | head -n1 || true)"
-  if [ -n "$kilo_bin" ]; then
-    mkdir -p "$HOME_DIR/.local/bin"
-    ln -sf "$kilo_bin" "$HOME_DIR/.local/bin/kilo"
-  else
-    warn "could not locate the kilo binary"
-  fi
+if [ ! -x "$HOME_DIR/.opencode/bin/opencode" ]; then
+  log "Installing OpenCode CLI"
+  # --no-modify-path: home-manager owns the shell config, so PATH comes from
+  # home.sessionPath instead of the installer writing to ~/.zshrc.
+  curl -fsSL https://opencode.ai/install | bash -s -- --no-modify-path \
+    || warn "opencode installer reported an error"
 fi
 
 # ---------------------------------------------------------------------------
@@ -184,7 +178,9 @@ cat <<EOF
 
 Manual steps that cannot be fully automated:
 
-  1. Authenticate Claude Code:  claude    (pick a subscription or API account)
+  1. Authenticate the agent CLIs:
+       claude      (pick a subscription or API account)
+       opencode auth login  (pick a provider or API account)
   2. Windows, once, in PowerShell as Administrator (or with Developer Mode on):
 
        winget install wez.wezterm
