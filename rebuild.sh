@@ -4,8 +4,8 @@ cd "$(dirname "$0")"
 
 # Pass the live repo path through to home.nix's out-of-store symlinks and the
 # current user through to flake.nix's output name. --impure is what lets the
-# flake read USER, HOME and DOTFILES_DIR from the environment.
-export DOTFILES_DIR="$PWD"
+# flake read USER, HOME and WORKSPACE_DIR from the environment.
+export WORKSPACE_DIR="$PWD"
 USERNAME="${USER:-$(id -un)}"
 
 if command -v home-manager >/dev/null 2>&1; then

@@ -1,4 +1,4 @@
-{ config, pkgs, username, homeDirectory, dotfilesDir, ... }:
+{ config, pkgs, username, homeDirectory, workspaceDir, ... }:
 
 {
   home.username = username;
@@ -60,25 +60,25 @@
   };
 
   # Edit-in-place: the real file stays in this repo, ~/.config just points at it.
-  # dotfilesDir is resolved from the environment at switch time (see flake.nix),
+  # workspaceDir is resolved from the environment at switch time (see flake.nix),
   # so the repo can live anywhere and the config still links to the live files.
   home.file.".config/wezterm".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/home/.config/wezterm";
+    config.lib.file.mkOutOfStoreSymlink "${workspaceDir}/home/.config/wezterm";
   home.file.".config/nvim".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/home/.config/nvim";
+    config.lib.file.mkOutOfStoreSymlink "${workspaceDir}/home/.config/nvim";
   home.file.".config/herdr".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/home/.config/herdr";
+    config.lib.file.mkOutOfStoreSymlink "${workspaceDir}/home/.config/herdr";
   home.file.".claude/settings.json".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/home/.claude/settings.json";
+    config.lib.file.mkOutOfStoreSymlink "${workspaceDir}/home/.claude/settings.json";
 
   home.file."AGENTS.md".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/home/AGENTS.md";
+    config.lib.file.mkOutOfStoreSymlink "${workspaceDir}/home/AGENTS.md";
   home.file.".claude/CLAUDE.md".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/home/AGENTS.md";
+    config.lib.file.mkOutOfStoreSymlink "${workspaceDir}/home/AGENTS.md";
   home.file.".codex/AGENTS.md".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/home/AGENTS.md";
+    config.lib.file.mkOutOfStoreSymlink "${workspaceDir}/home/AGENTS.md";
   home.file.".config/opencode/AGENTS.md".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/home/AGENTS.md";
+    config.lib.file.mkOutOfStoreSymlink "${workspaceDir}/home/AGENTS.md";
 
   programs.home-manager.enable = true;
 }

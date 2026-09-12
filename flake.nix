@@ -22,17 +22,17 @@
       # clone location; the fallbacks only apply under pure evaluation.
       rawUser = builtins.getEnv "USER";
       rawHome = builtins.getEnv "HOME";
-      rawDotfiles = builtins.getEnv "DOTFILES_DIR";
+      rawWorkspace = builtins.getEnv "WORKSPACE_DIR";
 
       username = if rawUser == "" then "user" else rawUser;
       homeDirectory = if rawHome == "" then "/home/${username}" else rawHome;
-      dotfilesDir =
-        if rawDotfiles == "" then "${homeDirectory}/github/dotfiles" else rawDotfiles;
+      workspaceDir =
+        if rawWorkspace == "" then "${homeDirectory}/github/agentic-workspace" else rawWorkspace;
     in
     {
       homeConfigurations.${username} = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
-        extraSpecialArgs = { inherit username homeDirectory dotfilesDir; };
+        extraSpecialArgs = { inherit username homeDirectory workspaceDir; };
         modules = [ ./home.nix ];
       };
     };

@@ -4,8 +4,8 @@ A one-command setup for a full agentic development environment on a Windows lapt
 
 ```bash
 mkdir -p ~/github && cd ~/github
-git clone git@github.com:g-rallo/dotfiles.git
-cd dotfiles
+git clone git@github.com:g-rallo/agentic-workspace.git
+cd agentic-workspace
 ./install.sh
 ```
 
@@ -54,7 +54,7 @@ The repo is self-contained: cloning it and running `install.sh` is the whole ins
 - Windows 10 or 11 with WSL2 and an Ubuntu distro installed (`wsl -d Ubuntu`).
 - Network access during install.
 - Sudo/admin rights once: `install.sh` adds zsh to `/etc/shells` and installs Nix; the Windows script creates a symlink in your user profile.
-- This repo cloned **inside the Linux filesystem** (for example `~/github/dotfiles`), never under `/mnt/c/...`.
+- This repo cloned **inside the Linux filesystem** (for example `~/github/agentic-workspace`), never under `/mnt/c/...`.
 
 Nix, zsh, the packages, the skills and the agent tools are all installed by `install.sh`; you do not need to install them first.
 
@@ -70,8 +70,8 @@ On the WSL side:
 
 ```bash
 mkdir -p ~/github && cd ~/github
-git clone git@github.com:g-rallo/dotfiles.git
-cd dotfiles
+git clone git@github.com:g-rallo/agentic-workspace.git
+cd agentic-workspace
 ./install.sh
 exec zsh
 ```
@@ -82,7 +82,7 @@ On the Windows side, once, in PowerShell:
 
 ```powershell
 winget install wez.wezterm
-cd "\\wsl$\Ubuntu\home\<your-wsl-user>\github\dotfiles"
+cd "\\wsl$\Ubuntu\home\<your-wsl-user>\github\agentic-workspace"
 powershell -ExecutionPolicy Bypass -File .\windows\setup.ps1
 ```
 
@@ -100,7 +100,7 @@ For `firstmate` (multi-repo agent crews), see the [firstmate docs](https://githu
 ## Repo layout
 
 ```
-dotfiles/
+agentic-workspace/
 ├── flake.nix              # nixpkgs + home-manager inputs, per-user output
 ├── flake.lock
 ├── home.nix               # packages, zsh, starship, config symlinks
@@ -135,7 +135,7 @@ Everything installed by `install.sh` but not tracked here (`opencode`, the skill
 ## Design notes
 
 - **home-manager, not nix-darwin.** No `configuration.nix`, no Homebrew: this is the portable user-level layer only.
-- **Auto-detected identity.** `flake.nix` reads `USER`, `HOME` and `DOTFILES_DIR` from the environment (`rebuild.sh` runs home-manager with `--impure`), so nothing is hardcoded to a particular user or clone path.
+- **Auto-detected identity.** `flake.nix` reads `USER`, `HOME` and `WORKSPACE_DIR` from the environment (`rebuild.sh` runs home-manager with `--impure`), so nothing is hardcoded to a particular user or clone path.
 - **Edit-in-place configs.** `wezterm`, `nvim`, `herdr`, `.claude/settings.json` and the `AGENTS.md` symlinks use `config.lib.file.mkOutOfStoreSymlink`, a real symlink to the live files in this repo, so edits take effect immediately with no rebuild. `./rebuild.sh` is only for changes to `home.nix` itself.
 - **WezTerm stays on Windows.** It is a native Windows GUI app; a Linux-built WezTerm inside headless WSL has no window to draw into. It reads `%USERPROFILE%\.wezterm.lua`, which `windows/setup.ps1` symlinks to the config in this repo.
 - **External tools are deliberately not in Nix.** `opencode`, `gnhf`, `no-mistakes`, `treehouse` and `firstmate` are optional, fast-moving, or not packaged, so `install.sh` installs them into writable per-user locations instead of the read-only Nix store.
