@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
-# One-command bootstrap for this dotfiles repo on WSL2 + Ubuntu.
+# One-command bootstrap for this agentic-workspace repo on WSL2 + Ubuntu.
 #
-#   git clone <this-repo> && cd dotfiles && ./install.sh
+#   git clone <this-repo> && cd agentic-workspace && ./install.sh
 #
 # Installs Nix if missing, applies the home-manager configuration, and then
 # installs the agent tooling that lives outside Nix (skills, no-mistakes, gnhf,
@@ -16,7 +16,7 @@ cd "$REPO_DIR"
 
 USERNAME="${USER:-$(id -un)}"
 HOME_DIR="${HOME:-/home/$USERNAME}"
-export DOTFILES_DIR="$REPO_DIR"
+export WORKSPACE_DIR="$REPO_DIR"
 
 # Ensure anything install.sh drops into these dirs is reachable immediately.
 export PATH="$HOME_DIR/.local/bin:$HOME_DIR/.opencode/bin:$HOME_DIR/.npm-global/bin:$PATH"
@@ -184,7 +184,7 @@ Manual steps that cannot be fully automated:
   2. Windows, once, in PowerShell as Administrator (or with Developer Mode on):
 
        winget install wez.wezterm
-       cd "\\\\wsl\$\\${DISTRO}\\home\\${USERNAME}\\github\\dotfiles"
+       cd "\\\\wsl\$\\${DISTRO}\\home\\${USERNAME}\\github\\agentic-workspace"
        powershell -ExecutionPolicy Bypass -File .\\windows\\setup.ps1
 
   3. Start a fresh shell so zsh and the new PATH take effect:

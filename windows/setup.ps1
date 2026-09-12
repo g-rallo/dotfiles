@@ -1,6 +1,6 @@
 #Requires -Version 5
 <#
-  Windows-side setup for the WSL dotfiles environment.
+  Windows-side setup for the WSL agentic-workspace environment.
 
   Installs WezTerm and links %USERPROFILE%\.wezterm.lua to the config that lives
   in the WSL clone of this repo. Run from an elevated PowerShell, or from a
@@ -29,11 +29,11 @@ if ([string]::IsNullOrWhiteSpace($wslHome)) {
 }
 
 $wslPath = "\\wsl$\$Distro" + ($wslHome -replace '/', '\')
-$configTarget = Join-Path $wslPath "github\dotfiles\home\.config\wezterm\wezterm.lua"
+$configTarget = Join-Path $wslPath "github\agentic-workspace\home\.config\wezterm\wezterm.lua"
 $linkPath = Join-Path $env:USERPROFILE ".wezterm.lua"
 
 if (-not (Test-Path $configTarget)) {
-  throw "WezTerm config not found at $configTarget. Clone this repo at ~/github/dotfiles inside WSL first."
+  throw "WezTerm config not found at $configTarget. Clone this repo at ~/github/agentic-workspace inside WSL first."
 }
 
 if (Test-Path $linkPath) {
